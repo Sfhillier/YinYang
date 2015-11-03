@@ -91,9 +91,15 @@ class PanelForSquare extends JPanel implements Runnable, MouseListener, ActionLi
 	// Panel size
 	public static final int PANEL_WIDTH = 1000;
 	public static final int PANEL_HEIGHT = 800;
-
+	
+	// Variable to display how much time is left in seconds as the time value is in the thousands
+	Double timeDisplay = 0.0;
+	
+	// Degrees by which to rotate the shape
 	double degrees = 0;
-	Integer timeLeft = 200;
+	
+	// How much time is left in the game
+	Integer timeLeft = 12000;
 	
 	private void initTimer(){
 		Timer timer;
@@ -121,19 +127,19 @@ class PanelForSquare extends JPanel implements Runnable, MouseListener, ActionLi
 
 		// Draws the two initial two YinYang symbols on the frame
 		g2.setColor(color1);
-		if(timeLeft < 100){
+		if(timeLeft < 6000){
 			g2.rotate(degrees, yin1X+(yin1Width/2), yin1Y+(yin1Height/2));
 		}
 		g2.fill(new MyYinYang(yin1X, yin1Y, yin1Width, yin1Height));
-		if(timeLeft < 100){
+		if(timeLeft < 6000){
 			g2.rotate(-degrees, yin1X+(yin1Width/2), yin1Y+(yin1Height/2));
 		}
 		g2.setColor(color2);
-		if(timeLeft < 100){
+		if(timeLeft < 6000){
 			g2.rotate(degrees, yin2X+(yin2Width/2), yin2Y+(yin2Height/2));
 		}
 		g2.fill(new MyYinYang (yin2X,yin2Y,yin2Width,yin2Height));
-		if(timeLeft < 100){
+		if(timeLeft < 6000){
 			g2.rotate(-degrees, yin2X+(yin2Width/2), yin2Y+(yin2Height/2));
 		}
 		
@@ -145,7 +151,8 @@ class PanelForSquare extends JPanel implements Runnable, MouseListener, ActionLi
 		g2.drawString("Misses", 800, 25);
 		g2.drawString(Integer.toString(misses), 800, 75);
 		g2.drawString("Time Left", 700, 110);
-		g2.drawString(timeLeft.toString(), 700, 160);
+		timeDisplay = timeLeft/100.0;
+		g2.drawString(timeDisplay.toString(), 700, 160);
 	}
 
 	public void run(){
@@ -159,20 +166,27 @@ class PanelForSquare extends JPanel implements Runnable, MouseListener, ActionLi
 			yin2X+=deltaX2;
 			yin2Y+=deltaY2;
 
-			if(timeLeft < 175){
+			// Makes the shapes bounce faster the longer the game elapses
+			// Also decreases the score appropriately
+			if(timeLeft < 9000){
 				maxChange = 4;
+				points-=1;
 			}
-			else if(timeLeft < 140){
+			else if(timeLeft < 7500){
 				maxChange = 6;
+				points-=2;
 			}
-			else if(timeLeft < 100){
+			else if(timeLeft < 6000){
 				maxChange = 7;
+				points-=3;
 			}
-			else if(timeLeft < 80){
+			else if(timeLeft < 4500){
 				maxChange = 8;
+				points-=4;
 			}
-			else if(timeLeft < 65){
+			else if(timeLeft < 3000){
 				maxChange = 10;
+				points-=5;
 			}
 			
 			if (timeLeft ==0 || misses<=0){
@@ -189,7 +203,7 @@ class PanelForSquare extends JPanel implements Runnable, MouseListener, ActionLi
 			checkForCollision();
 
 			degrees+=.2;
-
+			timeLeft--;
 			// Calls PaintComponent again to redraw the screen
 			repaint();
 			try{
@@ -199,7 +213,8 @@ class PanelForSquare extends JPanel implements Runnable, MouseListener, ActionLi
 		}
 	}
 
-
+	// Method to check if the two YinYang shapes have collided with each other,
+	// and subsequently perform scaling operations if they have
 	private void checkForCollision() {
 		// Creates two MyYinYang objects with the already used coordinates
 		// for use in the changing of color, direction, and scale once they
@@ -468,6 +483,6 @@ class PanelForSquare extends JPanel implements Runnable, MouseListener, ActionLi
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		timeLeft--;
+
 	}
 }
